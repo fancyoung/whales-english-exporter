@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>鲸鱼回放查看</title>
+</head>
+
+<body>
+  <div>
+    <input id="auth" type="text" placeholder="请在此处输入 Authorization 值" style="width: 100%" />
+    <button onclick="fetch()">提交</button>
+    <div id="box">
+    </div>
+  </div>
+  <script>
+    var lock = false;
+    function fetch(){
+      lock = true;
+      var auth = document.getElementById("auth").value;
+
+      var data = "auth=" + auth;
+      
+      var xhr = new XMLHttpRequest();
+      xhr.withCredentials = true;
+      
+      xhr.addEventListener("readystatechange", function() {
+        if(this.readyState === 4) {
+          lock = false;
+          var data = JSON.parse(this.responseText);
+          if(data.message) {
+            alert(data.message);
+            return;
+          }
+          var el = document.getElementById("box");
+          var str = '';
+          for(var i = 0; i < data.length; i++) {
+            str += '<h2>' + data[i].course.name_CN + ' ( ' + data[i].course.name_EN + ' ) ' + '</h2>';
+            str += '<h3>课程编号: ' + data[i].class_no + ' ( ' + (data[i].status == 1 ? '在读' : '已结班') + ' ) ' + '</h3>'
+            for(var j = 0; j < data[i].lessons.length; j++) {
+              let lesson = data[i].lessons[j];
+              str += '<div><span>' + lesson.lesson.no + ' > ' + lesson.lesson.name_CN + ' ( ' + lesson.lesson.name_EN + ' ) ' + '</span>'
+              str += '<span>' + (lesson.video.length > 0 ? JSON.stringify(lesson.video) : '[无]') + '</span></div>';
+            }
+            str += '<hr />';
+          }
+          el.innerHTML = str;
+        }
+      });
+      
+      xhr.open("POST", "./api/fetch");
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      
+      xhr.send(data);
+      alert('查询中, 请耐心等待(约 10 秒)');
+    }
+  </script>
+</body>
+
+</html>
