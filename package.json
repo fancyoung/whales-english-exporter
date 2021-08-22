@@ -1,0 +1,17 @@
+{
+  "name": "whales-english-exporter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "m3u8stream": "^0.8.4",
+    "mux.js": "^5.12.2",
+    "node-fetch": "^2.6.1",
+    "readline-sync": "^1.4.10"
+  }
+}

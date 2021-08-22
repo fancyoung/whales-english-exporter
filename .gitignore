@@ -1,0 +1,13 @@
+.idea
+.vscode
+**/*.iml
+**/*.swp
+
+package-lock.json
+
+/node_modules
+/build
+/dist
+*.log
+
+.DS_Store
