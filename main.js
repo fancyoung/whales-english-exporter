@@ -50,7 +50,7 @@ async function download(folder, fileName, url) {
   }
 
   try {
-    fileName.replace(/[/\\?%*:|"<>]/g, '-'); // 移除文件名中的特殊字符
+    fileName.replace(/[/\\?%*:|"<>]/g, ''); // 移除文件名中的特殊字符
     fileName = folder + '/' + fileName + '.mp4';
     console.log('>>> 开始下载: ' + fileName + ' --- ' + url);
     let stream = m3u8stream(url);
