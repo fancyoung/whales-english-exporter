@@ -49,22 +49,27 @@ async function download(folder, fileName, url) {
     await fs.promises.mkdir(folder);
   }
 
-  fileName = folder + '/' + fileName + '.mp4';
-  console.log('>>> 开始下载: ' + fileName + ' --- ' + url);
-  let stream = m3u8stream(url);
-  stream.pipe(fs.createWriteStream(fileName));
-  stream.on('progress', (segment, totalSegments, downloaded) => {
-    readline.cursorTo(process.stdout, 0);
-    process.stdout.write(
-      `${segment.num} of ${totalSegments} segments ` +
-      `(${(segment.num / totalSegments * 100).toFixed(2)}%) ` +
-      `${(downloaded / 1024 / 1024).toFixed(2)}MB downloaded`);
-  });
-  let end = new Promise(function(resolve, reject) {
-    stream.on('end', resolve);
-  });
-  await end;
-  console.log('<<< ' + fileName + ' 下载完成');
+  try {
+    fileName.replace(/[/\\?%*:|"<>]/g, '-'); // 移除文件名中的特殊字符
+    fileName = folder + '/' + fileName + '.mp4';
+    console.log('>>> 开始下载: ' + fileName + ' --- ' + url);
+    let stream = m3u8stream(url);
+    stream.pipe(fs.createWriteStream(fileName));
+    stream.on('progress', (segment, totalSegments, downloaded) => {
+      readline.cursorTo(process.stdout, 0);
+      process.stdout.write(
+        `${segment.num} of ${totalSegments} segments ` +
+        `(${(segment.num / totalSegments * 100).toFixed(2)}%) ` +
+        `${(downloaded / 1024 / 1024).toFixed(2)}MB downloaded`);
+    });
+    let end = new Promise(function(resolve, reject) {
+      stream.on('end', resolve);
+    });
+    await end;
+    console.log('<<< ' + fileName + ' 下载完成');
+  } catch(e) {
+    console.log('下载失败', e);
+  }
 }
 
 (async function() {
