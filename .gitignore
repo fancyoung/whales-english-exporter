@@ -10,4 +10,6 @@ package-lock.json
 /dist
 *.log
 
+/output
+
 .DS_Store

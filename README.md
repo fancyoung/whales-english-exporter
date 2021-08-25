@@ -2,6 +2,8 @@
 
 > 一鲸落, 万物生
 
+Whales English stop lesson and not refunding parents.
+
 双减一出, 鲸鱼凉凉了, 预存课时的钱也退不了, 维权无路.
 
 这个脚本是我用来下自己家回放视频的, 如果能帮到其他朋友, 也能稍微开心些.
