@@ -34,7 +34,6 @@ router.post('/api/getCode', async(ctx, next) => {
 router.post('/api/fetch', async(ctx, next) => {
   const body = ctx.request.body;
   let auth;
-  console.log(body);
   let response = await fetch(domain + '/v2/register/register', {
     method: 'POST', 
     headers: {
