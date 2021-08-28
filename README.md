@@ -14,6 +14,7 @@ Whales English stop lesson and not refunding parents.
 ---
 ## 使用前须知
 
+- 更新: 使用新的登录接口，去掉了手动查找 Auth 的步骤，大大简化流程
 - 本工具不是必须的, 不会使用的朋友也不必焦虑. 
   - 原因一: 鲸鱼老系统在关闭前, 有提供历史视频导出的义务, 所以等待就好
   - 原因二: 有一个不用本工具的简单方法, 装浏览器插件来下载  
@@ -25,27 +26,13 @@ Whales English stop lesson and not refunding parents.
   1. 用本工具协助一次性导出课程信息与视频地址, 然后用工具一个个下载(方法一) 
   2. 用本工具脚本批量下载, 适合愿意折腾或家中有程序员的(方法二) 
 
-## 准备工作
-下面两个方法, 都需要一个`Authorization`值(注意, 这个隐私信息不要给他人).
-找到这个值的步骤:
-
-
-1. 使用 Chrome (或可打开调试窗口的浏览器), 打开页面 https://parent.jingyupeiyou.com/
-2. 打开调试窗口: Windows 按 F12 或 Ctrl+Shift+i, Mac 按 Cmd + Opt + i
-3. 在页面中登录账号, 然后根据下图操作找到`Authorization`的值
-
-![参考图片](./helper.jpg)
-
-⚠️ 注意: 不要泄露个人信息, 尤其是这个`Authorization`值给他人, 有了这个信息, 可以做很多事. 所以建议自己或家人操作(甚至都不建议使用方法一).
-
-
 ## 方法一: 页面手动下载
 
 - 优点: 操作简单, 就算不下载也可以保持一下课程列表
 - 缺点: 需要一个个手动下载整理, 已上课程较多的比较麻烦
 - 步骤
   1. 打开页面 https://fancyoung.com/whales-english-exporter/fetch
-  2. 输入上面的`Authorization`并提交
+  2. 输入手机号，提交并接收验证码，输入验证码登录
   3. 如果成功, 约10秒后, 你的所有课程信息会列出来, 每节课后类似`["https://jypy-playback.jingyupeiyou.com/xxxxxx.m3u8"]`的则是视频地址
   4. m3u8 的视频地址为流媒体, 一般无法直接下载, 我随便找了个可用的 http://blog.luckly-mjw.cn/tool-show/m3u8-downloader/index.html , 把第三步的地址轮流贴进来下载(大家也可以自己搜搜别的工具)
 
@@ -61,9 +48,7 @@ Whales English stop lesson and not refunding parents.
   npm install
   node main.js
   ```
-  4. 根据提示, 在终端填入`Authorization` (上面准备信息里找到的)
+  4. 根据提示, 在终端依次填入手机号与验证码
   5. 开始自动抓取列表下载.
 
 注意: 一定要保持硬盘空间足够, 预估方法 500M * 已上课时数.
-
-PS: 鲸鱼哪天封回放, 别怪我……

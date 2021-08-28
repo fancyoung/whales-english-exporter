@@ -9,30 +9,93 @@
 
 <body>
   <div>
-    <input id="auth" type="text" placeholder="请在此处输入 Authorization 值" style="width: 100%" />
-    <button onclick="fetch()">提交</button>
+    <lable for="mobile">手机号:</label>
+    <input id="mobile" type="text" placeholder="请在此处输入手机号" style="width: 240px;" />
+    <button id="getCodeBtn" onclick="getCode()">获取验证码</button>
+    <div id="codeBox" style="display:none" >
+      <lable for="code">验证码:</label>
+      <input id="code" type="text" placeholder="请在此处手机收到的验证码" style="width: 240px;" />
+      <button id="fetchBtn" onclick="doFetch()">登录 & 查找</button>
+    </div>
     <div id="box">
     </div>
   </div>
   <script>
-    var lock = false;
-    function fetch(){
-      lock = true;
-      var auth = document.getElementById("auth").value;
+    function getCode(){
+      var mobileEl = document.getElementById('mobile');
+      var getCodeBtnEl = document.getElementById('getCodeBtn');
+      var codeBoxEl = document.getElementById('codeBox');
 
-      var data = "auth=" + auth;
+      var mobile = mobileEl.value;
+
+      if(!/^(\+\d{2,4})?1[3456789]\d{9}$/.test(mobile)) {
+        alert('请输入正确的手机号');
+        return;
+      }
+
+      mobileEl.disabled = true;
+      getCodeBtnEl.disabled = true;
+
+      var data = JSON.stringify({ mobile: mobile });
       
       var xhr = new XMLHttpRequest();
       xhr.withCredentials = true;
       
       xhr.addEventListener("readystatechange", function() {
         if(this.readyState === 4) {
-          lock = false;
           var data = JSON.parse(this.responseText);
-          if(data.message) {
-            alert(data.message);
+          if(data.code != 200) {
+            alert(data.code + ': ' + data.message);
+            mobileEl.disabled = false;
+            getCodeBtnEl.disabled = false;
             return;
           }
+          
+          codeBoxEl.style.display = 'block';
+          alert('请在手机接收验证码');
+        }
+      });
+      
+      xhr.open("POST", "./api/getCode");
+      xhr.setRequestHeader("Content-Type", "application/json");
+      
+      xhr.send(data);
+    }
+
+    function doFetch(){
+      var mobileEl = document.getElementById('mobile');
+      var getCodeBtnEl = document.getElementById('getCodeBtn');
+      var fetchBtnEl = document.getElementById('fetchBtn');
+      var codeEl = document.getElementById('code');
+
+      var mobile = mobileEl.value;
+      var code = codeEl.value;
+
+      if(!/^\d{6}$/.test(code)) {
+        alert('请输入正确的验证码');
+        return;
+      }
+      fetchBtnEl.disabled = true;
+      codeEl.disabled = true;
+
+      var data = JSON.stringify({ mobile: mobile, code: code });
+      
+      var xhr = new XMLHttpRequest();
+      xhr.withCredentials = true;
+      
+      xhr.addEventListener("readystatechange", function() {
+        if(this.readyState === 4) {
+          var data = JSON.parse(this.responseText);
+
+          if(data.code && data.code != 200) {
+            alert(data.code + ': ' + data.message);
+            mobileEl.disabled = false;
+            getCodeBtnEl.disabled = false;
+            fetchBtnEl.disabled = false;
+            codeEl.disabled = false;
+            return;
+          }
+
           var el = document.getElementById("box");
           var str = '';
           for(var i = 0; i < data.length; i++) {
@@ -50,7 +113,7 @@
       });
       
       xhr.open("POST", "./api/fetch");
-      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.setRequestHeader("Content-Type", "application/json");
       
       xhr.send(data);
       alert('查询中, 请耐心等待(约 10 秒)');

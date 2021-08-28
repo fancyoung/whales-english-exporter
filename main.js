@@ -3,6 +3,7 @@ const fs = require('fs');
 const readline = require('readline');
 const m3u8stream = require('m3u8stream');
 const reader = require("readline-sync");
+const { Buffer } = require('buffer');
 
 const domain = 'https://parent-api.jingyupeiyou.com';
 
@@ -72,49 +73,53 @@ async function download(folder, fileName, url) {
   }
 }
 
-(async function() {
-  /* login */
-  /* 安全机制不好跳过, 先不做了
+async function getCode() {
   let mobile = reader.question('手机号: ');
-  console.log('>' + mobile)
 
   try {
-    let response = await fetch(domain + '/v2/register/send', {
+    let response = await fetch(domain + '/v3/register/send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mobile })
     });
     let result = await response.json();
-    console.log(result.code, result.message);
+    if(result.code == 200) {
+      console.log('--- 已给手机发生验证码, 请查收 ---');
+      return mobile;
+    }
+    console.error(result.code, result.message);
   } catch(e) {
     console.error(e);
   }
+  return await getCode();
+}
 
-  console.log('--- 已给手机发生验证码, 请查收 ---');
+async function getAuth(mobile) {
   let code = reader.question('验证码: ');
-  console.log('>' + code)
 
   try {
-    let response = await fetch(domain + '/v1/user/leads/register', {
+    let response = await fetch(domain + '/v2/register/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        mobile,
-        code,
-        platform: 'MacIntel',
-        userAgent: 'chrome'
-      })
+      body: JSON.stringify({ mobile, code, platform: 'iOS', userAgent: 'iOS', staff_no: 'app\/ios' })
     });
     let result = await response.json();
+    if(result.code == 200 && result.data.newToken) {
+      auth = Buffer.from(result.data.newToken);
+      auth = 'Basic ' + auth.toString('base64');
+      console.log('--- 登录成功 ---');
+      return auth;
+    }
     console.log(result);
   } catch(e) {
     console.error(e);
   }
-  console.log('登录成功...');
-  return;
-  */
-  auth = reader.question('Authorization: ');
+  return await getAuth(await getCode());
+}
 
+(async function() {
+  /* login */
+  let auth = await getAuth(await getCode());
 
   /* class list */
   console.log('抓取课程...');
