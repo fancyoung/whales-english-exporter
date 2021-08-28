@@ -74,7 +74,8 @@ async function download(folder, fileName, url) {
 }
 
 async function getCode() {
-  let mobile = reader.question('手机号: ');
+  console.log('1. 请先输入手机号');
+  let mobile = reader.question('Mobile: ');
 
   try {
     let response = await fetch(domain + '/v3/register/send', {
@@ -95,7 +96,8 @@ async function getCode() {
 }
 
 async function getAuth(mobile) {
-  let code = reader.question('验证码: ');
+  console.log('2. 请输入收到的验证码');
+  let code = reader.question('Code: ');
 
   try {
     let response = await fetch(domain + '/v2/register/register', {
