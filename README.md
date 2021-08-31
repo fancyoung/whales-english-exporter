@@ -14,6 +14,7 @@ Whales English stop lesson and not refunding parents.
 ---
 ## 使用前须知
 
+- 更新(210831): 方法一支持直接下载
 - 更新: 使用新的登录接口，去掉了手动查找 Auth 的步骤，大大简化流程
 - 本工具不是必须的, 不会使用的朋友也不必焦虑. 
   - 原因一: 鲸鱼老系统在关闭前, 有提供历史视频导出的义务, 所以等待就好
@@ -23,8 +24,8 @@ Whales English stop lesson and not refunding parents.
     - 可以自己找一个下载 m3u8 流媒体的浏览器插件, 在视频播放页使用来下载
 
 - 本工具提供 2 个方法: 
-  1. 用本工具协助一次性导出课程信息与视频地址, 然后用工具一个个下载(方法一) 
-  2. 用本工具脚本批量下载, 适合愿意折腾或家中有程序员的(方法二) 
+  方法一: 用本工具协助一次性导出课程信息与视频地址, 然后一个个下载
+  方法二: 用本工具脚本批量下载, 适合愿意折腾或家中有程序员的
 
 ## 方法一: 页面手动下载
 
@@ -34,7 +35,7 @@ Whales English stop lesson and not refunding parents.
   1. 打开页面 https://fancyoung.com/whales-english-exporter/fetch
   2. 输入手机号，提交并接收验证码，输入验证码登录
   3. 如果成功, 约10秒后, 你的所有课程信息会列出来, 每节课后类似`["https://jypy-playback.jingyupeiyou.com/xxxxxx.m3u8"]`的则是视频地址
-  4. m3u8 的视频地址为流媒体, 一般无法直接下载, 我随便找了个可用的 http://blog.luckly-mjw.cn/tool-show/m3u8-downloader/index.html , 把第三步的地址轮流贴进来下载(大家也可以自己搜搜别的工具)
+  4. 直接点击地址后的下载按钮(一个视频约500M, 所以不建议同时下过多文件), 或用其他工具下载(注: m3u8 的视频地址为流媒体, 一般工具无法直接下载)
 
 ## 方法二: 自动批量抓取
 

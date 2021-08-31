@@ -104,19 +104,118 @@
             for(var j = 0; j < data[i].lessons.length; j++) {
               let lesson = data[i].lessons[j];
               str += '<div><span>' + lesson.lesson.no + ' > ' + lesson.lesson.name_CN + ' ( ' + lesson.lesson.name_EN + ' ) ' + '</span>'
-              str += '<span>' + (lesson.video.length > 0 ? JSON.stringify(lesson.video) : '[无]') + '</span></div>';
+              str += '<span>' + getDownloadEl(lesson, j) + '</span></div>';
             }
             str += '<hr />';
           }
           el.innerHTML = str;
         }
       });
+
+      function getDownloadEl(lesson, index) {
+        let urls = lesson.video;
+        let str = '';
+        for(let i = 0; i < urls.length; i++) {
+          let url = urls[i];
+          let fileName = ('' + (index + 1 + 100)).slice(1) + '-' + lesson.lesson.name_EN.replace(/\s/g, '-') + (urls.length > 1 ? '-part' + (i + 1) : '');
+          fileName = fileName.replace(/[/\\?%*:|"<>]/g, '');
+          str += url + '<button onclick="download(\''+url+'\', \''+ fileName +'\',this)">下载</button>'
+        }
+        if(str == '') {
+          str = '[无]';
+        }
+        return str;
+      }
       
       xhr.open("POST", "./api/fetch");
       xhr.setRequestHeader("Content-Type", "application/json");
       
       xhr.send(data);
       alert('查询中, 请耐心等待(约 10 秒)');
+    }
+
+    function download(url, fileName, el){
+      var urlList = [];
+      var fileList = [];
+      var duration = 0;
+      var downloadCount = 0;
+      var isStop = false;
+      el.disabled = true;
+      el.innerHTML = '下载中...';
+
+      function downloadFile(url, index, tryCount) {
+        var xhr = new XMLHttpRequest();
+        xhr.responseType = 'arraybuffer';
+        xhr.addEventListener("readystatechange", function() {
+          if(this.readyState === 4) {
+            if(this.status == 200) {
+              el.innerHTML = '下载中...已完成' + parseInt((downloadCount/urlList.length)*100) + '%';
+              fileList[index] = this.response;
+              downloadCount++;
+              if(downloadCount == urlList.length) {
+                console.log('下载完成');
+                el.innerHTML = '下载完成';
+                let a = document.createElement('a');
+                let file = new Blob(fileList, { type: 'video/mp4' });
+                a.download = fileName + '.mp4';
+                a.href = URL.createObjectURL(file);
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+              }
+            } else {
+              if(tryCount == null) {
+                tryCount = 1;
+              } else if(tryCount < 5) {
+                tryCount++;
+              } else {
+                isStop = true;
+                el.innerHTML = '下载失败……重新下载';
+                el.disabled = false;
+                return;
+              }
+              setTimeout(function() {
+                downloadFile(url, index, tryCount);
+              }, 5000);
+            }
+          }
+        });
+        xhr.open("GET", url);
+        xhr.send();
+      }
+
+      var xhr = new XMLHttpRequest();
+      xhr.addEventListener("readystatechange", function() {
+        if(this.readyState === 4) {
+          if(this.status == 200) {
+            var data = this.response.split('\n');
+            data.map(function(v) {
+              if(v.toLowerCase().indexOf('.ts') > 0) {
+                urlList.push(url.replace(/(?<=\/)[^/]*$/, v));
+              } else if(v.indexOf('#EXTINF:') > -1) {
+                v = parseFloat(v.replace('#EXTINF:', ''));
+                duration += v;
+              }
+            });
+
+            console.log(urlList.length)
+            for(var i = 0; i < urlList.length; i++) {
+              setTimeout((function(url, index) {
+                return function () {
+                  downloadFile(url, index);
+                };
+              })(urlList[i], i), 1000 * i);
+            }
+
+          } else {
+            alert('地址不存在');
+          }
+        }
+      });
+      
+      xhr.open("GET", url);
+      xhr.send();
     }
   </script>
 </body>
